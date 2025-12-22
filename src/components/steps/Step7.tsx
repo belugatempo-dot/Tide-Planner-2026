@@ -314,9 +314,6 @@ export function Step7() {
 
       {/* Actions */}
       <div className="flex flex-wrap gap-2 justify-center no-print">
-        <button onClick={handleCopy} className="btn btn-secondary text-xs sm:text-sm">
-          {copied ? '✓' : '📋'} {copied ? t.copied : t.copy}
-        </button>
         <button
           onClick={handleShareImage}
           disabled={generating}
@@ -326,6 +323,9 @@ export function Step7() {
         </button>
         <button onClick={handleCalendar} className="btn btn-secondary text-xs sm:text-sm">
           📅 {t.calendar}
+        </button>
+        <button onClick={handleCopy} className="btn btn-secondary text-xs sm:text-sm">
+          {copied ? '✓' : '📋'} {copied ? t.copied : t.copy}
         </button>
         <button onClick={handlePrint} className="btn btn-secondary text-xs sm:text-sm">
           🖨️ {t.print}
