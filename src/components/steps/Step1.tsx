@@ -18,13 +18,12 @@ export function Step1() {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="text-center mb-6">
-        <h2 className="text-xl sm:text-2xl font-semibold mb-2" style={{ color: 'var(--text-title)' }}>
+      <div className="text-center mb-8">
+        <h2 className="text-xl sm:text-2xl font-semibold mb-1" style={{ color: 'var(--text-title)' }}>
           📍 {t.title} <span className="text-base font-normal" style={{ color: 'var(--text-muted)' }}>({t.titleHint})</span>
         </h2>
+        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{t.instruction}</p>
       </div>
-
-      <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>{t.instruction}</p>
 
       <SingleWheel year="2025" />
 
