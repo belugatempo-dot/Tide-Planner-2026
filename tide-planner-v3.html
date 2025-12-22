@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tide Planner | Life Wheel 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-ocean: #0a1628;
+            --tide-blue: #1e3a5f;
+            --wave-cyan: #3d7a8c;
+            --foam-light: #a8d4e6;
+            --text-primary: #f8f9fa;
+            --text-secondary: #a8b4c4;
+            --glass-bg: rgba(30, 58, 95, 0.4);
+            --glass-border: rgba(168, 212, 230, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--deep-ocean);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        .ocean-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 30% 70%, rgba(61, 122, 140, 0.25) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 30%, rgba(30, 58, 95, 0.4) 0%, transparent 50%),
+                linear-gradient(180deg, var(--deep-ocean) 0%, #0d2137 100%);
+        }
+
+        /* Language Switcher */
+        .lang-switcher {
+            position: fixed;
+            top: 20px; right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 4px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 3px;
+        }
+
+        .lang-btn {
+            padding: 6px 14px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 16px;
+            transition: all 0.2s;
+        }
+
+        .lang-btn.active {
+            background: var(--wave-cyan);
+            color: white;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px 100px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            font-family: 'Fraunces', serif;
+            font-size: 36px;
+            font-weight: 300;
+            background: linear-gradient(135deg, var(--foam-light), var(--wave-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        /* Mode Toggle */
+        .mode-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .mode-btn {
+            padding: 10px 24px;
+            border: 2px solid var(--glass-border);
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-btn.active {
+            border-color: var(--foam-light);
+            background: rgba(168, 212, 230, 0.15);
+            color: var(--foam-light);
+        }
+
+        .mode-btn:hover:not(.active) {
+            border-color: var(--wave-cyan);
+            color: var(--text-primary);
+        }
+
+        /* Main Wheel Section */
+        .wheel-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 1;
+        }
+
+        .wheel-svg {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .wheel-center-score {
+            font-family: 'Fraunces', serif;
+            font-size: 48px;
+            font-weight: 300;
+            color: var(--foam-light);
+        }
+
+        .wheel-center-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Instructions */
+        .instructions {
+            text-align: center;
+            padding: 16px 24px;
+            background: var(--glass-bg);
+            border-radius: 16px;
+            margin-bottom: 24px;
+            max-width: 500px;
+        }
+
+        .instructions p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .instructions strong {
+            color: var(--foam-light);
+        }
+
+        /* Legend */
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 600px;
+            margin: 0 auto 32px;
+        }
+
+        @media (max-width: 600px) {
+            .legend { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .legend-item:hover, .legend-item.active {
+            border-color: var(--wave-cyan);
+            background: rgba(61, 122, 140, 0.2);
+        }
+
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .legend-text {
+            font-size: 13px;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .legend-score {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--foam-light);
+            min-width: 20px;
+            text-align: right;
+        }
+
+        /* Word Section */
+        .word-section {
+            max-width: 600px;
+            margin: 0 auto 32px;
+        }
+
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .word-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        @media (max-width: 500px) {
+            .word-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .word-card {
+            padding: 16px 12px;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 14px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .word-card:hover {
+            border-color: var(--wave-cyan);
+            transform: translateY(-2px);
+        }
+
+        .word-card.selected {
+            border-color: var(--foam-light);
+            background: rgba(168, 212, 230, 0.15);
+        }
+
+        .word-emoji {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .word-text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Results Section */
+        .results-section {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .result-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .result-title {
+            font-family: 'Fraunces', serif;
+            font-size: 18px;
+        }
+
+        .result-badge {
+            padding: 4px 12px;
+            background: rgba(168, 212, 230, 0.2);
+            border-radius: 12px;
+            font-size: 12px;
+            color: var(--foam-light);
+        }
+
+        .gap-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .gap-item:last-child { border-bottom: none; }
+
+        .gap-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .gap-content { flex: 1; }
+
+        .gap-name {
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .gap-scores {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .gap-scores span {
+            color: var(--foam-light);
+            font-weight: 600;
+        }
+
+        .gap-bar {
+            width: 60px;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .gap-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 20px;
+            border-radius: 24px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--wave-cyan);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--wave-cyan), var(--tide-blue));
+            border: none;
+            color: white;
+            box-shadow: 0 4px 20px rgba(61, 122, 140, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(61, 122, 140, 0.4);
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: fixed;
+            padding: 8px 14px;
+            background: var(--tide-blue);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            font-size: 13px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 1000;
+            white-space: nowrap;
+        }
+
+        .tooltip.visible { opacity: 1; }
+
+        .tooltip-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .tooltip-score {
+            color: var(--foam-light);
+        }
+
+        /* Print */
+        @media print {
+            .ocean-bg, .lang-switcher, .mode-toggle, .action-buttons, .instructions { display: none !important; }
+            body { background: white; color: #1a1a1a; }
+        }
+    </style>
+</head>
+<body>
+    <div class="ocean-bg"></div>
+
+    <div class="lang-switcher">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="zh">中文</button>
+    </div>
+
+    <div class="tooltip" id="tooltip">
+        <div class="tooltip-title"></div>
+        <div class="tooltip-score"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <h1 class="logo">Tide Planner</h1>
+            <p class="tagline" data-en="Life Wheel Method • Plan Your 2026" data-zh="人生平衡轮 • 规划你的 2026">Life Wheel Method • Plan Your 2026</p>
+        </header>
+
+        <!-- Mode Toggle -->
+        <div class="mode-toggle">
+            <button class="mode-btn active" data-mode="2025" data-en="📍 2025 Now" data-zh="📍 2025 现状">📍 2025 Now</button>
+            <button class="mode-btn" data-mode="2026" data-en="🎯 2026 Goal" data-zh="🎯 2026 目标">🎯 2026 Goal</button>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <p data-en="<strong>Click or drag</strong> on each slice to rate your satisfaction (1-10). The closer to the edge, the higher the score." data-zh="<strong>点击或拖动</strong>每个扇形区域来评分（1-10）。越靠近边缘，分数越高。"><strong>Click or drag</strong> on each slice to rate your satisfaction (1-10). The closer to the edge, the higher the score.</p>
+        </div>
+
+        <!-- Main Wheel -->
+        <div class="wheel-section">
+            <div class="wheel-wrapper">
+                <svg class="wheel-svg" id="wheelSvg" viewBox="0 0 400 400"></svg>
+                <div class="wheel-center">
+                    <div class="wheel-center-score" id="centerScore">5.0</div>
+                    <div class="wheel-center-label" data-en="Average" data-zh="平均分">Average</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend" id="legend"></div>
+
+        <!-- Word of Year -->
+        <div class="word-section">
+            <h2 class="section-title" data-en="🌟 Your Word for 2026" data-zh="🌟 你的 2026 年度关键词">🌟 Your Word for 2026</h2>
+            <div class="word-grid" id="wordGrid"></div>
+        </div>
+
+        <!-- Results -->
+        <div class="results-section" id="results"></div>
+
+        <!-- Actions -->
+        <div class="action-buttons">
+            <button class="btn btn-secondary" id="resetBtn">🔄 <span data-en="Reset" data-zh="重置">Reset</span></button>
+            <button class="btn btn-secondary" id="copyBtn">📋 <span data-en="Copy" data-zh="复制">Copy</span></button>
+            <button class="btn btn-secondary" id="calendarBtn">📅 <span data-en="Calendar" data-zh="日历">Calendar</span></button>
+            <button class="btn btn-primary" id="printBtn">🖨️ <span data-en="Print" data-zh="打印">Print</span></button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIG
+        // ============================================
+        const DIMENSIONS = [
+            { key: 'career', emoji: '💼', color: '#f59e0b', en: 'Career', zh: '事业' },
+            { key: 'finance', emoji: '💰', color: '#10b981', en: 'Finance', zh: '财务' },
+            { key: 'health', emoji: '❤️', color: '#ef4444', en: 'Health', zh: '健康' },
+            { key: 'relationships', emoji: '👥', color: '#ec4899', en: 'Relationships', zh: '关系' },
+            { key: 'growth', emoji: '📚', color: '#8b5cf6', en: 'Growth', zh: '成长' },
+            { key: 'fun', emoji: '🎉', color: '#06b6d4', en: 'Fun', zh: '娱乐' },
+            { key: 'environment', emoji: '🏠', color: '#84cc16', en: 'Environment', zh: '环境' },
+            { key: 'contribution', emoji: '🌍', color: '#f97316', en: 'Contribution', zh: '贡献' }
+        ];
+
+        const WORDS = [
+            { key: 'growth', emoji: '🌱', en: 'Growth', zh: '成长' },
+            { key: 'balance', emoji: '⚖️', en: 'Balance', zh: '平衡' },
+            { key: 'courage', emoji: '🦁', en: 'Courage', zh: '勇气' },
+            { key: 'focus', emoji: '🎯', en: 'Focus', zh: '专注' },
+            { key: 'joy', emoji: '✨', en: 'Joy', zh: '喜悦' },
+            { key: 'freedom', emoji: '🕊️', en: 'Freedom', zh: '自由' },
+            { key: 'impact', emoji: '💥', en: 'Impact', zh: '影响力' },
+            { key: 'peace', emoji: '☮️', en: 'Peace', zh: '平和' }
+        ];
+
+        // ============================================
+        // STATE
+        // ============================================
+        let currentLang = 'en';
+        let currentMode = '2025';
+        let scores2025 = {};
+        let scores2026 = {};
+        let selectedWord = 'growth';
+        let activeSlice = null;
+
+        DIMENSIONS.forEach(d => {
+            scores2025[d.key] = 5;
+            scores2026[d.key] = 7;
+        });
+
+        // ============================================
+        // WHEEL DRAWING
+        // ============================================
+        const svg = document.getElementById('wheelSvg');
+        const cx = 200, cy = 200, maxR = 170, minR = 30;
+        const n = DIMENSIONS.length;
+        const angleStep = (2 * Math.PI) / n;
+
+        function polarToCart(angle, r) {
+            return {
+                x: cx + r * Math.cos(angle - Math.PI / 2),
+                y: cy + r * Math.sin(angle - Math.PI / 2)
+            };
+        }
+
+        function drawWheel() {
+            const scores = currentMode === '2025' ? scores2025 : scores2026;
+            let html = '';
+
+            // Grid circles
+            for (let i = 1; i <= 10; i++) {
+                const r = minR + (i / 10) * (maxR - minR);
+                html += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,${i === 10 ? 0.15 : 0.05})" stroke-width="1"/>`;
+            }
+
+            // Slices
+            DIMENSIONS.forEach((dim, i) => {
+                const startAngle = i * angleStep;
+                const endAngle = (i + 1) * angleStep;
+                const score = scores[dim.key];
+                const r = minR + (score / 10) * (maxR - minR);
+
+                // Filled slice
+                const p1 = polarToCart(startAngle, minR);
+                const p2 = polarToCart(startAngle, r);
+                const p3 = polarToCart(endAngle, r);
+                const p4 = polarToCart(endAngle, minR);
+
+                const largeArc = 0;
+                const pathFill = `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y} A ${r} ${r} 0 ${largeArc} 1 ${p3.x} ${p3.y} L ${p4.x} ${p4.y} A ${minR} ${minR} 0 ${largeArc} 0 ${p1.x} ${p1.y}`;
+
+                html += `<path d="${pathFill}" fill="${dim.color}" fill-opacity="0.6" stroke="${dim.color}" stroke-width="2" data-key="${dim.key}" class="slice"/>`;
+
+                // Full slice area (for interaction)
+                const pf1 = polarToCart(startAngle, minR);
+                const pf2 = polarToCart(startAngle, maxR);
+                const pf3 = polarToCart(endAngle, maxR);
+                const pf4 = polarToCart(endAngle, minR);
+                const pathFull = `M ${pf1.x} ${pf1.y} L ${pf2.x} ${pf2.y} A ${maxR} ${maxR} 0 ${largeArc} 1 ${pf3.x} ${pf3.y} L ${pf4.x} ${pf4.y} A ${minR} ${minR} 0 ${largeArc} 0 ${pf1.x} ${pf1.y}`;
+                html += `<path d="${pathFull}" fill="transparent" data-key="${dim.key}" class="slice-area"/>`;
+
+                // Divider lines
+                const lineEnd = polarToCart(startAngle, maxR);
+                html += `<line x1="${cx}" y1="${cy}" x2="${lineEnd.x}" y2="${lineEnd.y}" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>`;
+
+                // Label
+                const midAngle = startAngle + angleStep / 2;
+                const labelPos = polarToCart(midAngle, maxR + 24);
+                html += `<text x="${labelPos.x}" y="${labelPos.y}" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.8)" font-size="20">${dim.emoji}</text>`;
+            });
+
+            svg.innerHTML = html;
+            updateCenter();
+            updateLegend();
+            updateResults();
+
+            // Add event listeners
+            svg.querySelectorAll('.slice-area').forEach(slice => {
+                slice.addEventListener('mousedown', handleSliceStart);
+                slice.addEventListener('touchstart', handleSliceStart, { passive: false });
+            });
+        }
+
+        function handleSliceStart(e) {
+            e.preventDefault();
+            activeSlice = e.target.dataset.key;
+            updateScoreFromEvent(e);
+            
+            const moveHandler = (e) => updateScoreFromEvent(e);
+            const endHandler = () => {
+                activeSlice = null;
+                document.removeEventListener('mousemove', moveHandler);
+                document.removeEventListener('mouseup', endHandler);
+                document.removeEventListener('touchmove', moveHandler);
+                document.removeEventListener('touchend', endHandler);
+            };
+
+            document.addEventListener('mousemove', moveHandler);
+            document.addEventListener('mouseup', endHandler);
+            document.addEventListener('touchmove', moveHandler, { passive: false });
+            document.addEventListener('touchend', endHandler);
+        }
+
+        function updateScoreFromEvent(e) {
+            if (!activeSlice) return;
+            
+            const rect = svg.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            const x = (clientX - rect.left) / rect.width * 400 - cx;
+            const y = (clientY - rect.top) / rect.height * 400 - cy;
+            const dist = Math.sqrt(x * x + y * y);
+            
+            // Map distance to score
+            let score = Math.round(((dist - minR) / (maxR - minR)) * 10);
+            score = Math.max(1, Math.min(10, score));
+            
+            const scores = currentMode === '2025' ? scores2025 : scores2026;
+            scores[activeSlice] = score;
+            
+            drawWheel();
+            showTooltip(e, activeSlice, score);
+        }
+
+        function updateCenter() {
+            const scores = currentMode === '2025' ? scores2025 : scores2026;
+            const avg = (Object.values(scores).reduce((a, b) => a + b, 0) / n).toFixed(1);
+            document.getElementById('centerScore').textContent = avg;
+        }
+
+        // ============================================
+        // LEGEND
+        // ============================================
+        function updateLegend() {
+            const scores = currentMode === '2025' ? scores2025 : scores2026;
+            const legend = document.getElementById('legend');
+            
+            legend.innerHTML = DIMENSIONS.map(dim => `
+                <div class="legend-item" data-key="${dim.key}">
+                    <div class="legend-color" style="background: ${dim.color}"></div>
+                    <div class="legend-text">${dim[currentLang]}</div>
+                    <div class="legend-score">${scores[dim.key]}</div>
+                </div>
+            `).join('');
+
+            legend.querySelectorAll('.legend-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const key = item.dataset.key;
+                    const scores = currentMode === '2025' ? scores2025 : scores2026;
+                    // Cycle through scores
+                    scores[key] = scores[key] >= 10 ? 1 : scores[key] + 1;
+                    drawWheel();
+                });
+            });
+        }
+
+        // ============================================
+        // TOOLTIP
+        // ============================================
+        const tooltip = document.getElementById('tooltip');
+
+        function showTooltip(e, key, score) {
+            const dim = DIMENSIONS.find(d => d.key === key);
+            tooltip.querySelector('.tooltip-title').textContent = `${dim.emoji} ${dim[currentLang]}`;
+            tooltip.querySelector('.tooltip-score').textContent = `${score}/10`;
+            
+            const x = (e.touches ? e.touches[0].clientX : e.clientX) + 15;
+            const y = (e.touches ? e.touches[0].clientY : e.clientY) + 15;
+            
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+            tooltip.classList.add('visible');
+        }
+
+        function hideTooltip() {
+            tooltip.classList.remove('visible');
+        }
+
+        svg.addEventListener('mouseleave', hideTooltip);
+        document.addEventListener('mouseup', hideTooltip);
+        document.addEventListener('touchend', hideTooltip);
+
+        // ============================================
+        // MODE TOGGLE
+        // ============================================
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentMode = btn.dataset.mode;
+                drawWheel();
+            });
+        });
+
+        // ============================================
+        // WORD GRID
+        // ============================================
+        function buildWordGrid() {
+            const grid = document.getElementById('wordGrid');
+            grid.innerHTML = WORDS.map(w => `
+                <div class="word-card ${selectedWord === w.key ? 'selected' : ''}" data-word="${w.key}">
+                    <div class="word-emoji">${w.emoji}</div>
+                    <div class="word-text">${w[currentLang]}</div>
+                </div>
+            `).join('');
+
+            grid.querySelectorAll('.word-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    grid.querySelectorAll('.word-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    selectedWord = card.dataset.word;
+                    updateResults();
+                });
+            });
+        }
+
+        // ============================================
+        // RESULTS
+        // ============================================
+        function updateResults() {
+            const container = document.getElementById('results');
+            const word = WORDS.find(w => w.key === selectedWord);
+            
+            // Calculate gaps
+            const gaps = DIMENSIONS.map(dim => ({
+                ...dim,
+                current: scores2025[dim.key],
+                target: scores2026[dim.key],
+                gap: scores2026[dim.key] - scores2025[dim.key]
+            })).sort((a, b) => b.gap - a.gap);
+
+            const focusAreas = gaps.filter(g => g.gap > 0).slice(0, 3);
+            const avg2025 = (Object.values(scores2025).reduce((a, b) => a + b, 0) / n).toFixed(1);
+            const avg2026 = (Object.values(scores2026).reduce((a, b) => a + b, 0) / n).toFixed(1);
+
+            const focusLabel = currentLang === 'en' ? 'Focus Areas for 2026' : '2026 年聚焦领域';
+            const summaryLabel = currentLang === 'en' ? 'Summary' : '总结';
+            const yourWord = currentLang === 'en' ? 'Your Word' : '年度关键词';
+
+            container.innerHTML = `
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="result-title">🎯 ${focusLabel}</div>
+                        <div class="result-badge">${currentLang === 'en' ? 'Top 3 Gaps' : '差距最大的 3 项'}</div>
+                    </div>
+                    ${focusAreas.map(item => `
+                        <div class="gap-item">
+                            <div class="gap-icon" style="background: ${item.color}22; color: ${item.color};">${item.emoji}</div>
+                            <div class="gap-content">
+                                <div class="gap-name">${item[currentLang]}</div>
+                                <div class="gap-scores"><span>${item.current}</span> → <span>${item.target}</span> (+${item.gap})</div>
+                            </div>
+                            <div class="gap-bar">
+                                <div class="gap-bar-fill" style="width: ${item.gap * 10}%; background: ${item.color};"></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="result-title">📊 ${summaryLabel}</div>
+                    </div>
+                    <div class="gap-item">
+                        <div class="gap-icon" style="background: rgba(168, 212, 230, 0.2);">📍</div>
+                        <div class="gap-content">
+                            <div class="gap-name">2025 ${currentLang === 'en' ? 'Average' : '平均分'}</div>
+                        </div>
+                        <div class="legend-score" style="font-size: 20px;">${avg2025}</div>
+                    </div>
+                    <div class="gap-item">
+                        <div class="gap-icon" style="background: rgba(168, 212, 230, 0.2);">🎯</div>
+                        <div class="gap-content">
+                            <div class="gap-name">2026 ${currentLang === 'en' ? 'Target' : '目标分'}</div>
+                        </div>
+                        <div class="legend-score" style="font-size: 20px;">${avg2026}</div>
+                    </div>
+                    <div class="gap-item">
+                        <div class="gap-icon" style="background: rgba(168, 212, 230, 0.2);">🌟</div>
+                        <div class="gap-content">
+                            <div class="gap-name">${yourWord}</div>
+                        </div>
+                        <div class="legend-score" style="font-size: 20px;">${word.emoji} ${word[currentLang]}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // LANGUAGE
+        // ============================================
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentLang = btn.dataset.lang;
+                updateLanguage();
+            });
+        });
+
+        function updateLanguage() {
+            document.querySelectorAll('[data-en]').forEach(el => {
+                el.innerHTML = el.dataset[currentLang];
+            });
+            updateLegend();
+            buildWordGrid();
+            updateResults();
+        }
+
+        // ============================================
+        // ACTIONS
+        // ============================================
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            DIMENSIONS.forEach(d => {
+                scores2025[d.key] = 5;
+                scores2026[d.key] = 7;
+            });
+            selectedWord = 'growth';
+            drawWheel();
+            buildWordGrid();
+        });
+
+        document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            const word = WORDS.find(w => w.key === selectedWord);
+            const avg2025 = (Object.values(scores2025).reduce((a, b) => a + b, 0) / n).toFixed(1);
+            const avg2026 = (Object.values(scores2026).reduce((a, b) => a + b, 0) / n).toFixed(1);
+            
+            const md = currentLang === 'en' ? `# 2026 Life Wheel Plan
+
+## 🌟 Word of the Year: ${word.emoji} ${word.en}
+
+## Scores
+| Dimension | 2025 | 2026 | Gap |
+|-----------|------|------|-----|
+${DIMENSIONS.map(d => `| ${d.emoji} ${d.en} | ${scores2025[d.key]} | ${scores2026[d.key]} | +${scores2026[d.key] - scores2025[d.key]} |`).join('\n')}
+
+**2025 Average:** ${avg2025} → **2026 Target:** ${avg2026}
+
+---
+*Tide Planner | Life Wheel Method*` : `# 2026 人生平衡轮计划
+
+## 🌟 年度关键词：${word.emoji} ${word.zh}
+
+## 评分
+| 维度 | 2025 | 2026 | 差距 |
+|------|------|------|------|
+${DIMENSIONS.map(d => `| ${d.emoji} ${d.zh} | ${scores2025[d.key]} | ${scores2026[d.key]} | +${scores2026[d.key] - scores2025[d.key]} |`).join('\n')}
+
+**2025 平均分：** ${avg2025} → **2026 目标分：** ${avg2026}
+
+---
+*Tide Planner | 人生平衡轮方法*`;
+
+            navigator.clipboard.writeText(md).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.innerHTML = `✓ ${currentLang === 'en' ? 'Copied!' : '已复制！'}`;
+                setTimeout(() => {
+                    btn.innerHTML = `📋 <span data-en="Copy" data-zh="复制">${currentLang === 'en' ? 'Copy' : '复制'}</span>`;
+                }, 2000);
+            });
+        });
+
+        document.getElementById('calendarBtn').addEventListener('click', () => {
+            const uid = () => Math.random().toString(36).substr(2, 9);
+            const fmt = d => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            
+            let ics = 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//TidePlanner//EN\n';
+            
+            [[3,31,'Q1'],[6,30,'Q2'],[9,30,'Q3'],[12,31,'Q4']].forEach(([m,d,q]) => {
+                const date = new Date(2026, m-1, d, 10, 0);
+                const title = currentLang === 'en' ? `${q} Life Wheel Review` : `${q} 人生平衡轮复盘`;
+                ics += `BEGIN:VEVENT\nUID:${uid()}@tide\nDTSTART:${fmt(date)}\nDTEND:${fmt(new Date(date.getTime()+3600000))}\nSUMMARY:${title}\nEND:VEVENT\n`;
+            });
+            
+            ics += 'END:VCALENDAR';
+            
+            const blob = new Blob([ics], { type: 'text/calendar' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = '2026-life-wheel.ics';
+            link.click();
+        });
+
+        // ============================================
+        // INIT
+        // ============================================
+        drawWheel();
+        buildWordGrid();
+        updateLanguage();
+    </script>
+</body>
+</html>

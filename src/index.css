@@ -1,48 +1,73 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=DM+Sans:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-main: #EEF3F6;
+  --bg-white: #FFFFFF;
+  --text-title: #2B275F;
+  --text-body: #5F6C80;
+  --text-muted: #8A95A5;
+  --accent: #6FC7B6;
+  --accent-hover: #9FE1D3;
+  --accent-light: #E8F7F4;
+  --border: #D8E0E8;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  @apply bg-slate-50 text-slate-800 antialiased;
-  font-feature-settings: 'cv11', 'ss01';
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  background: var(--bg-main);
+  min-height: 100vh;
+  color: var(--text-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: 'Fraunces', serif;
 }
 
 @layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium text-sm cursor-pointer transition-all duration-200;
+  }
+
   .btn-primary {
-    @apply px-6 py-3 bg-tide-600 text-white font-medium rounded-lg
-           hover:bg-tide-700 transition-colors duration-200
-           focus:outline-none focus:ring-2 focus:ring-tide-500 focus:ring-offset-2
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-hover);
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-white text-slate-700 font-medium rounded-lg border border-slate-300
-           hover:bg-slate-50 transition-colors duration-200
-           focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    color: var(--text-body);
   }
 
-  .input-field {
-    @apply w-full px-4 py-3 border border-slate-300 rounded-lg
-           focus:outline-none focus:ring-2 focus:ring-tide-500 focus:border-transparent
-           placeholder:text-slate-400 transition-all duration-200;
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--text-title);
   }
 
-  .textarea-field {
-    @apply w-full px-4 py-3 border border-slate-300 rounded-lg resize-none
-           focus:outline-none focus:ring-2 focus:ring-tide-500 focus:border-transparent
-           placeholder:text-slate-400 transition-all duration-200;
+  .card {
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
   }
 }
 
 @media print {
   .no-print {
     display: none !important;
-  }
-
-  body {
-    background: white;
   }
 }
