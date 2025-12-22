@@ -2,6 +2,7 @@ import React, { createContext, useContext, useReducer, useEffect, useCallback, u
 import type { AppState, Dimension } from '../lib/types';
 import { initialState, DIMENSIONS } from '../lib/types';
 import { saveState, loadState, downloadState, uploadState } from '../lib/storage';
+import { analytics } from '../lib/analytics';
 
 type Action =
   | { type: 'SET_STEP'; step: AppState['step'] }
@@ -115,7 +116,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!initialized.current) {
-      dispatch({ type: 'LOAD', state: loadState() });
+      const loadedState = loadState();
+
+      // Check for language parameter in URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const langParam = urlParams.get('lang');
+
+      // If URL has lang parameter, override the loaded language
+      if (langParam === 'en' || langParam === 'zh') {
+        loadedState.lang = langParam;
+      }
+
+      dispatch({ type: 'LOAD', state: loadedState });
       initialized.current = true;
     }
   }, []);
@@ -129,6 +141,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const setStep = useCallback((step: AppState['step']) => {
     dispatch({ type: 'SET_STEP', step });
+    analytics.stepCompleted(step);
+    if (step === 7) {
+      analytics.wizardCompleted();
+    }
   }, []);
 
   const setScore = useCallback((year: '2025' | '2026', key: string, value: number) => {
@@ -141,6 +157,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const setLang = useCallback((lang: 'en' | 'zh') => {
     dispatch({ type: 'SET_LANG', lang });
+    analytics.languageSwitched(lang);
   }, []);
 
   const setReflection = useCallback((field: 'high' | 'low', value: string) => {
@@ -149,18 +166,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const setKeyword2025 = useCallback((keyword: string) => {
     dispatch({ type: 'SET_KEYWORD_2025', keyword });
+    if (keyword) {
+      analytics.keywordSelected('2025', keyword);
+    }
   }, []);
 
   const setAction = useCallback((dimKey: string, action: string, remove?: boolean) => {
     dispatch({ type: 'SET_ACTION', dimKey, action, remove });
+    if (!remove && action) {
+      analytics.actionCommitted(dimKey, action);
+    }
   }, []);
 
   const setKeyword2026 = useCallback((keyword: string) => {
     dispatch({ type: 'SET_KEYWORD_2026', keyword });
+    if (keyword) {
+      analytics.keywordSelected('2026', keyword);
+    }
   }, []);
 
   const reset = useCallback(() => {
     dispatch({ type: 'RESET' });
+    analytics.journeyRestarted();
   }, []);
 
   const getHighestDim = useCallback(() => {
@@ -202,11 +229,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const download = useCallback(() => {
     downloadState(state);
+    analytics.dataDownloaded();
   }, [state]);
 
   const upload = useCallback(async (file: File) => {
     const newState = await uploadState(file);
     dispatch({ type: 'LOAD', state: newState });
+    analytics.dataUploaded();
   }, []);
 
   return (

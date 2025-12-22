@@ -4,6 +4,7 @@ import { useApp } from '../../context/WizardContext';
 import { DIMENSIONS, WORDS } from '../../lib/types';
 import { generateMarkdown, copyToClipboard, downloadFile, generateCalendarICS } from '../../lib/planGenerator';
 import { ShareCard } from '../ShareCard';
+import { analytics } from '../../lib/analytics';
 
 export function Step7() {
   const { state, reset, getHighestDim, getLowestDim, getTopGapDims } = useApp();
@@ -59,6 +60,7 @@ export function Step7() {
     if (success) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      analytics.planCopied();
     }
   };
 
@@ -82,6 +84,7 @@ export function Step7() {
           link.download = 'tide-planner-2026.png';
           link.click();
           URL.revokeObjectURL(url);
+          analytics.imageShared();
         }
       }, 'image/png');
     } catch (error) {
@@ -94,10 +97,12 @@ export function Step7() {
   const handleCalendar = () => {
     const ics = generateCalendarICS(state.lang);
     downloadFile(ics, '2026-life-wheel.ics', 'text/calendar');
+    analytics.calendarExported();
   };
 
   const handlePrint = () => {
     window.print();
+    analytics.planPrinted();
   };
 
   const handleReset = () => {

@@ -1,6 +1,7 @@
 import { useRef, useCallback, useState } from 'react';
 import { useApp } from '../context/WizardContext';
 import { DIMENSIONS } from '../lib/types';
+import { analytics } from '../lib/analytics';
 
 const CX = 250;
 const CY = 250;
@@ -75,12 +76,15 @@ export function SingleWheel({ year }: SingleWheelProps) {
         setTooltip(null);
         document.removeEventListener('mousemove', onMove);
         document.removeEventListener('mouseup', onUp);
+        // Track final score
+        const finalScore = year === '2025' ? state.scores2025[key] : state.scores2026[key];
+        analytics.wheelScoreChanged(year, key, finalScore || 0);
       };
 
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onUp);
     },
-    [handleScoreFromEvent]
+    [handleScoreFromEvent, year, state.scores2025, state.scores2026]
   );
 
   const handleTouchStart = useCallback(
@@ -96,12 +100,15 @@ export function SingleWheel({ year }: SingleWheelProps) {
         setTooltip(null);
         document.removeEventListener('touchmove', onMove);
         document.removeEventListener('touchend', onEnd);
+        // Track final score
+        const finalScore = year === '2025' ? state.scores2025[key] : state.scores2026[key];
+        analytics.wheelScoreChanged(year, key, finalScore || 0);
       };
 
       document.addEventListener('touchmove', onMove, { passive: false });
       document.addEventListener('touchend', onEnd);
     },
-    [handleScoreFromEvent]
+    [handleScoreFromEvent, year, state.scores2025, state.scores2026]
   );
 
   return (
@@ -261,6 +268,8 @@ export function SingleWheel({ year }: SingleWheelProps) {
           max="10"
           value={joy}
           onChange={(e) => setJoy(year, parseInt(e.target.value))}
+          onMouseUp={(e) => analytics.joyScoreChanged(year, parseInt((e.target as HTMLInputElement).value))}
+          onTouchEnd={(e) => analytics.joyScoreChanged(year, parseInt((e.target as HTMLInputElement).value))}
           className="w-full h-2 rounded-full appearance-none cursor-pointer"
           style={{
             background: `linear-gradient(to right, var(--accent) 0%, var(--accent) ${(joy - 1) * 11.1}%, #E5E7EB ${(joy - 1) * 11.1}%, #E5E7EB 100%)`,
