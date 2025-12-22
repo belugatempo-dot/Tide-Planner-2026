@@ -122,12 +122,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const urlParams = new URLSearchParams(window.location.search);
       const langParam = urlParams.get('lang');
 
+      let languageSource: 'default' | 'url' | 'upload' = 'default';
+
       // If URL has lang parameter, override the loaded language
       if (langParam === 'en' || langParam === 'zh') {
         loadedState.lang = langParam;
+        languageSource = 'url';
       }
 
       dispatch({ type: 'LOAD', state: loadedState });
+
+      // Track language usage on initial load
+      analytics.languageUsed(loadedState.lang, languageSource);
+
       initialized.current = true;
     }
   }, []);
@@ -158,6 +165,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const setLang = useCallback((lang: 'en' | 'zh') => {
     dispatch({ type: 'SET_LANG', lang });
     analytics.languageSwitched(lang);
+    analytics.languageUsed(lang, 'switch');
+
+    // Update URL parameter to reflect language change
+    const url = new URL(window.location.href);
+    url.searchParams.set('lang', lang);
+    window.history.pushState({}, '', url.toString());
   }, []);
 
   const setReflection = useCallback((field: 'high' | 'low', value: string) => {
@@ -236,6 +249,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const newState = await uploadState(file);
     dispatch({ type: 'LOAD', state: newState });
     analytics.dataUploaded();
+    analytics.languageUsed(newState.lang, 'upload');
   }, []);
 
   return (

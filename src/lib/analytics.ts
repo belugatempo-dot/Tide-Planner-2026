@@ -11,6 +11,11 @@ export const analytics = {
     track('step_completed', { step: stepNumber });
   },
 
+  // Language preference tracking
+  languageUsed: (language: 'en' | 'zh', source: 'default' | 'url' | 'switch' | 'upload') => {
+    track('language_used', { language, source });
+  },
+
   // Language switch
   languageSwitched: (language: 'en' | 'zh') => {
     track('language_switched', { language });
