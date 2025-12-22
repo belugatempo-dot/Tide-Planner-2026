@@ -196,5 +196,5 @@ export const initialState: AppState = {
   keyword2025: '',
   actions: {},
   keyword2026: '',
-  lang: 'en',
+  lang: 'zh',
 };

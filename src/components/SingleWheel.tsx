@@ -106,7 +106,7 @@ export function SingleWheel({ year }: SingleWheelProps) {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="relative w-full max-w-[500px] sm:max-w-[580px]" style={{ aspectRatio: '1' }}>
+      <div className="relative w-full min-w-[300px] max-w-[500px] sm:max-w-[580px]" style={{ aspectRatio: '1' }}>
         <svg
           ref={svgRef}
           viewBox="0 0 500 500"
