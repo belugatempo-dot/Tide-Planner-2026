@@ -40,12 +40,12 @@ A guided wizard to help you reflect on the past year and create a structured ann
 - 🎯 Identify top 3 focus areas for growth
 
 ### Quality Assurance
-- ✅ Comprehensive test coverage
-  - Unit tests (Vitest)
+- ✅ **58 unit tests** covering state management, utilities, and components
+  - Unit tests (Vitest + happy-dom)
   - Component tests (React Testing Library)
-  - E2E tests (Playwright)
+  - E2E tests (Playwright - 10 scenarios across 3 browsers)
 - 🤖 CI/CD automation (GitHub Actions)
-- 🌐 Cross-browser compatibility
+- 🌐 Cross-browser compatibility (Chrome, Firefox, Safari, Mobile)
 
 ## 🚀 Live Demo
 
@@ -92,18 +92,28 @@ npm run preview
 ### Testing
 
 ```bash
-# Unit & component tests
+# Unit & component tests (58 tests)
 npm test                 # Run all tests
 npm run test:ui          # Interactive test UI
 npm run test:coverage    # Generate coverage report
 
-# E2E tests
+# E2E tests (10 scenarios)
 npm run test:e2e         # Run Playwright tests
 npm run test:e2e:ui      # Playwright UI mode
 
 # Run all tests
 npm run test:all         # Unit + E2E
 ```
+
+**Test Coverage:**
+| Category | Tests | Description |
+|----------|-------|-------------|
+| Storage | 10 | localStorage save/load/upload/download |
+| Analytics | 3 | Event tracking verification |
+| Plan Generator | 18 | Markdown, clipboard, calendar ICS |
+| WizardContext | 22 | State management, actions, helpers |
+| App | 5 | Language switching, persistence |
+| E2E | 10 | Full wizard flow, navigation, mobile |
 
 ### Linting
 
