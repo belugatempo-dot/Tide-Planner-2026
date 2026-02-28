@@ -3,5 +3,13 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "vite",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "redirects": [
+    {
+      "source": "/:path(.*)",
+      "has": [{ "type": "host", "value": "tide-planner.vercel.app" }],
+      "destination": "https://tide-planner.beluga-tempo.com/:path",
+      "permanent": true
+    }
+  ]
 }

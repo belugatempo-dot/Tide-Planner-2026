@@ -49,11 +49,11 @@ A guided wizard to help you reflect on the past year and create a structured ann
 
 ## 🚀 Live Demo
 
-**Production:** https://tide-planner.vercel.app
+**Production:** https://tide-planner.beluga-tempo.com
 
 **Language-specific links:**
-- 🇨🇳 Chinese: https://tide-planner.vercel.app?lang=zh
-- 🇬🇧 English: https://tide-planner.vercel.app?lang=en
+- 🇨🇳 Chinese: https://tide-planner.beluga-tempo.com?lang=zh
+- 🇬🇧 English: https://tide-planner.beluga-tempo.com?lang=en
 
 ## 📖 How It Works
 
@@ -218,4 +218,4 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 **Start planning your best year yet! 🎯**
 
-[Launch Tide Planner →](https://tide-planner.vercel.app)
+[Launch Tide Planner →](https://tide-planner.beluga-tempo.com)
